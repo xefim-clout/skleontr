@@ -1,10 +1,25 @@
+"""
+This file is part of Skleontr.
+
+Skleontr is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Skleontr is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Skleontr.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+
 
 import curses
 import os
 import openai
-
-
-
 
 
 
@@ -253,8 +268,8 @@ def delete (*params):
 
 def change_text (new_text):    #   <-------- UPDATE THIS FUNCTION TO WORK WITH SELECTED TEXT
     global text_buffer
-    global paragraph_cursor    #   !!!!!  enter selection mode from command menu by pressing 'space'
-    global text_cursor         #   !!!!!  confirm selection also with 'space'(in the selection function)
+    global paragraph_cursor    # !! enter selection mode from command menu by pressing 'space'
+    global text_cursor         # !! confirm selection also with 'space'(in the selection function)
 
     #if new_text == '\n':   #then split following text into a new paragraph
     old_text = text_buffer[paragraph_cursor][text_cursor]
@@ -513,7 +528,7 @@ try:
         char = screen.getch()
             #if 'ESC' is pressed
         if char == 27:
-            screen.addstr ('Exiting.......')
+            screen.addstr ('Exiting......')
             break
 
         elif char == curses.KEY_UP:
