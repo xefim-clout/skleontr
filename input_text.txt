@@ -1,3 +1,5 @@
+This is auto-loaded text file (input_text.txt) example. The content is just random text. 
+
 I want to make a terminal application with two windows. The first window should read the commands typed by users (just as when you type : in vim), while the second window should show something that updated regularly (e.g: a timer) 
 
 To make the display window and command window work separately, I use multi-thread strategy. It works at the beginning, but soon the display messed up when I write more than two letters. (The upper right panel). 
