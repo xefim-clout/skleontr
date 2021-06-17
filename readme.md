@@ -49,6 +49,9 @@ While working in the Skleontr command line, you can run: \
 
 ## Future Updates
 
+- [ ] Code refactor
+- [ ] Commands abstraction
+- [ ] Priority bug fixes
 - [ ] Many new features
 
 ## Author
