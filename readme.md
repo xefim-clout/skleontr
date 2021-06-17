@@ -59,7 +59,7 @@ While working in the Skleontr command line, you can run: \
 **Xefim-Clout**
 
 - [Profile](https://github.com/xefim-clout "Xefim Clout")
-- [Email]("mailto:vertinski@inbox.lv")
+- [Email: vertinski@inbox.lv](mailto:vertinski@inbox.lv)
 
 ## 🤝 Support
 
