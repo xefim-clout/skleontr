@@ -1,0 +1,6 @@
+I want to make a terminal application with two windows. The first window should read the commands typed by users (just as when you type : in vim), while the second window should show something that updated regularly (e.g: a timer) 
+
+To make the display window and command window work separately, I use multi-thread strategy. It works at the beginning, but soon the display messed up when I write more than two letters. (The upper right panel). 
+
+
+The task, unlike the previous two, asks about the joint probability of the entire sequence of hidden states that generated a particular sequence of observations (see illustration on the right). This task is generally applicable when HMM's are applied to different sorts of problems from those for which the tasks of filtering and smoothing are applicable. An example is part-of-speech tagging, where the hidden states represent the underlying parts of speech corresponding to an observed sequence of words. In this case, what is of interest is the entire sequence of parts of speech, rather than simply the part of speech for a single word, as filtering or smoothing would compute. 
