@@ -95,25 +95,27 @@ def draw_text (para_cursor, cursor, sel_cursor = 1):
 
     for paragraph in text_buffer:
         if len (paragraph[:cursor]) > 0:  #this eliminates printing one space at the beginning of text
-            temp_text_1 = ' '.join(paragraph[:cursor]) + ' '
+            temp_text_1 = (' '.join(paragraph[:cursor]) + ' ').replace('\n ', '\n')
         else:
             temp_text_1 = ''
 
+        #temp_text_1 = temp_text_1.lstrip()   #remove paragraph leading space EVEN MORE!
+
         if para_count == para_cursor:    #if current paragraph (being printed) is the selected paragraph
             if paragraph[cursor] == '\n':
-                active_text = ' \n'
-            elif paragraph[cursor] == ' ':
-                active_text = ' '
+                active_text = (' \n').replace('\n ', '\n')    #<------ !!trying to get rid of trailing space
+            elif paragraph[cursor] == ' ':                    #        after newline '\n'.  Y NO WORK?!
+                active_text = (' ').replace('\n ', '\n')
             else:
-                active_text = ' '.join (paragraph[cursor:cursor + sel_cursor])
+                active_text = (' '.join (paragraph[cursor:cursor + sel_cursor])).replace('\n ', '\n')
 
-            temp_text_2 = ' ' + ' '.join (paragraph[cursor+sel_cursor:])
+            temp_text_2 = (' ' + ' '.join (paragraph[cursor+sel_cursor:])).replace('\n ', '\n')
             text_screen.addstr (temp_text_1)
             text_screen.addstr (active_text, curses.A_STANDOUT)
             text_screen.addstr (temp_text_2)
         else:
-            temp_text2 = ' '.join (paragraph[cursor:])
-            text_screen.addstr (temp_text_1 + temp_text2)
+            temp_text_2 = (' '.join (paragraph[cursor:])).replace('\n ', '\n')
+            text_screen.addstr (temp_text_1 + temp_text_2)
 
         para_count += 1
 
