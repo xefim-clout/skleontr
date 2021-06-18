@@ -97,7 +97,7 @@ def draw_text (para_cursor, cursor, sel_cursor = 1):
         if len (paragraph[:cursor]) > 0:  #this eliminates printing one space at the beginning of text
             temp_text_1 = (' '.join(paragraph[:cursor]) + ' ').replace('\n ', '\n')
         else:
-            temp_text_1 = ''
+            temp_text_1 = ('').replace('\n ', '\n')
 
         #temp_text_1 = temp_text_1.lstrip()   #remove paragraph leading space EVEN MORE!
 
@@ -109,10 +109,14 @@ def draw_text (para_cursor, cursor, sel_cursor = 1):
             else:
                 active_text = (' '.join (paragraph[cursor:cursor + sel_cursor])).replace('\n ', '\n')
 
-            temp_text_2 = (' ' + ' '.join (paragraph[cursor+sel_cursor:])).replace('\n ', '\n')
+            if paragraph[cursor] == '\n':
+                temp_text_2 = ('').replace('\n ', '\n') #getting rid of new paragraph leading space HARDCORE
+            else: temp_text_2 = (' ' + ' '.join (paragraph[cursor+sel_cursor:])).replace('\n ', '\n')
+
             text_screen.addstr (temp_text_1)
             text_screen.addstr (active_text, curses.A_STANDOUT)
             text_screen.addstr (temp_text_2)
+
         else:
             temp_text_2 = (' '.join (paragraph[cursor:])).replace('\n ', '\n')
             text_screen.addstr (temp_text_1 + temp_text_2)
