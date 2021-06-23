@@ -161,7 +161,8 @@ def select (*params):
         elif char == curses.KEY_RIGHT:
             #screen.addstr ("RIGHT Key\n")
             select_cursor += 1
-            if select_cursor > len (text_buffer[paragraph_cursor]) - 1: select_cursor = len (text_buffer[paragraph_cursor]) - 1
+            if select_cursor > len (text_buffer[paragraph_cursor]) - 1:
+                select_cursor = len (text_buffer[paragraph_cursor]) - 1
             draw_text (paragraph_cursor, text_cursor, select_cursor)   #update screen
 
         # if special command input char '/' is pressed
