@@ -25,15 +25,15 @@ import openai
 
 
 def cmd_cleanup():     #clear last executed command from screen
-    screen.clrtoeol()
-    screen.move (1, 1)
-    screen.clrtoeol()
-    screen.border()
+    command_screen.clrtoeol()
+    command_screen.move (1, 1)
+    command_screen.clrtoeol()
+    command_screen.border()
 
 
 def stat_log1 (status):   #update command line status - results and errors
-    screen.move (2, 1)
-    screen.addstr (status)
+    command_screen.move (2, 1)
+    command_screen.addstr (status)
 
 
 def stat_log (*params):    # UPDATE ALL WINDOWS after applying changes
@@ -53,16 +53,21 @@ def data (*params):
 
 
 def printz (*params):
-    screen.addstr (params[0] + '\n')  #adds newline to text
+    command_screen.addstr (params[0] + '\n')  #adds newline to text
 
 
 def exit (*params):
     global exit_flag
-    screen.addstr ('exiting!.....')
+    command_screen.addstr ('exiting!.....')
     exit_flag = True
 
 
 def read_file (filename):
+    '''
+    Splits words into separate entries by spaces ' '.
+    [[word, word, word],[word, word],[word, word, word]]
+    To get one space into list, separate it with spaces.
+    '''
     global text_buffer
     global paragraph_cursor
     global text_cursor
@@ -71,7 +76,14 @@ def read_file (filename):
 
     with open (filename, 'r') as f:    #split newline character in a paragraph of its own
        for line in f:
-          text_buffer.append (line.split(' '))
+          if line[0] == '.':    #if line begins with a dot '.' then append the whole line
+              text_buffer.append ([line])
+          else:
+              text_buffer.append (line.split(' '))
+
+    #for line in text_buffer:     #substitute empty elements with spaces ' '.
+    #    for word in line:
+    #        if word == '': line[line.index(word)] = ' '
 
     text_screen.move (0, 0)
     text_screen.clrtobot()
@@ -80,7 +92,7 @@ def read_file (filename):
     text_cursor = len (text_buffer[-1]) - 2
 
     draw_text (paragraph_cursor, text_cursor)   #put cursor on last word of last paragraph
-    stat_log1 ('Opened file: ' + str(filename))
+    stat_log (1, 'Opened file: ' + str(filename))
 
 
 def draw_text (para_cursor, cursor, sel_cursor = 1):
@@ -103,8 +115,8 @@ def draw_text (para_cursor, cursor, sel_cursor = 1):
 
         if para_count == para_cursor:    #if current paragraph (being printed) is the selected paragraph
             if paragraph[cursor] == '\n':
-                active_text = (' \n').replace('\n ', '\n')    #<------ !!trying to get rid of trailing space
-            elif paragraph[cursor] == ' ':                    #        after newline '\n'.  Y NO WORK?!
+                active_text = (' \n').replace('\n ', '\n')    #<------ !!getting rid of trailing space
+            elif paragraph[cursor] == ' ':                    #        after a newline '\n'.
                 active_text = (' ').replace('\n ', '\n')
             else:
                 active_text = (' '.join (paragraph[cursor:cursor + sel_cursor])).replace('\n ', '\n')
@@ -143,16 +155,9 @@ def select (*params):
     cmd_cleanup()
 
     while True:
-        char = screen.getch()
-        #if 'ESC' is pressed
-        if char == 27:
-            draw_text (paragraph_cursor, text_cursor, 1)    #deselect text
-            stat_log1 ('Command mode.......')
-            cmd_cleanup()
-            select_cursor = 1
-            break
+        char = command_screen.getch()
 
-        elif char == curses.KEY_LEFT:
+        if char == curses.KEY_LEFT:
             #screen.addstr ("LEFT Key\n")
             select_cursor -= 1
             if select_cursor < 1: select_cursor = 1
@@ -161,13 +166,13 @@ def select (*params):
         elif char == curses.KEY_RIGHT:
             #screen.addstr ("RIGHT Key\n")
             select_cursor += 1
-            if select_cursor > len (text_buffer[paragraph_cursor]) - 1:
-                select_cursor = len (text_buffer[paragraph_cursor]) - 1
+            if select_cursor > len (text_buffer[paragraph_cursor]) - text_cursor:
+                select_cursor = len (text_buffer[paragraph_cursor]) - text_cursor
             draw_text (paragraph_cursor, text_cursor, select_cursor)   #update screen
 
         # if special command input char '/' is pressed
         elif char == 47:
-            stat_log1 ('Another level deeper into command mode! PLS EXIT!')
+            stat_log1 ('Another level deeper into command mode! PLS EXIT NAO!')
             cmd_cleanup()
             work()
 
@@ -190,13 +195,25 @@ def select (*params):
         elif char == 10:
             stat_log1 ('Back to command mode!')   #Return to command menu and keep track of selected text
             cmd_cleanup()              #so it can be edited with commands. do this with 'space' also
+            select_cursor = 1
             break
 
-        # If ENTER is pressed      <-------- EDIT THIS FUNCTION!!
+        # If SPACE is pressed      <-------- EDIT THIS FUNCTION!!
         elif char == 32:
             stat_log1 ('Back to command mode!')
             cmd_cleanup()
+            select_cursor = 1
             break
+
+        #if 'ESC' is pressed
+        elif char == 27:
+            draw_text (paragraph_cursor, text_cursor, 1)    #deselect text
+            stat_log (1, 'Command mode.......')
+            cmd_cleanup()
+            select_cursor = 1
+            break
+
+        else: pass
 
 
 def paste (*params):
@@ -219,7 +236,7 @@ def insert (*params):
     global text_buffer
     global copy_buffer
 
-    insert_buffer = str(params[0]).split(' ')[:]    # this inserts empty "words" if user inputs many spaces
+    insert_buffer = str(params[0]).split(' ')[:]  # this inserts empty space if user inputs 3 spaces
 
     temp_cursor = text_cursor    # insert the copied text BEFORE selected word
     for word in insert_buffer:
@@ -291,7 +308,7 @@ def change_text (new_text):    #   <-------- UPDATE THIS FUNCTION TO WORK WITH S
 def change_text_interactive():
     stat_log (1, 'Editing the text. Press ENTER to save, ESC to exit.')
     cmd_cleanup()
-    screen.refresh()
+    command_screen.refresh()
 
     inputt = ''
 
@@ -398,7 +415,7 @@ def chat (*params):
     cmd_cleanup()
 
     while True:
-        inputt = screen.getstr()
+        inputt = command_screen.getstr()
         inputt = inputt.decode('UTF-8')
 
         if inputt == '/exit': break
@@ -448,7 +465,7 @@ def work():
     #screen.addstr ('/')   # indicate the command character on screen
 
     #inputt = str(input())   #split input into command and params (if existing)
-    inputt = screen.getstr()
+    inputt = command_screen.getstr()
     inputt = inputt.decode('UTF-8')
 
     command = inputt.split(' ')[0]
@@ -463,7 +480,7 @@ def work():
         actions[command](params)
         cmd_cleanup()
     else:
-        stat_log1 ('No such command!....')
+        stat_log (1, 'No such command!....')
         cmd_cleanup()
 
 
@@ -502,40 +519,41 @@ height,width = stdscr.getmaxyx()
 stdscr.clear()
 
 
-screen = curses.newwin (height, width, height - 3, 0)   #init a text WINDOW
+command_screen = curses.newwin (height, width, height - 3, 0)   #init a text WINDOW
 text_screen = curses.newwin (height - 4, width, 0, 0)
-#screen = curses.initscr()   #initialize a SCREEN
 
 #window border   !!set only for command window (at the bottom of terminal)
 #text_screen.border()
 text_screen.refresh()
-screen.border()
-screen.refresh()
+command_screen.border()
+command_screen.refresh()
 #turn screen scrolling on
-screen.scrollok (True)
+command_screen.scrollok (True)
 text_screen.scrollok (True)
 # Turn off Echo
 #curses.noecho()
 #Instant Response
 curses.cbreak()
 #Use Special Keys
-screen.keypad (True)  # <---- enable special keys for command window
+command_screen.keypad (True)  # <---- enable special keys for command window
 text_screen.keypad (True)
 
 
-
 draw_text (0, text_cursor)   #display the text buffer; paragraph = 0
-stat_log1 ('Welcome to Skleontr!!  Type /help to see the list of commands........')
+stat_log (1, 'Welcome to Skleontr!!  Type /help to see the list of commands........')
 read_file ('input_text.txt')   #!!debug
-screen.move (1, 1)   #move command window cursor
+command_screen.move (1, 1)   #move command window cursor
 
+
+
+### Main loop ###
 
 try:
     while True:
-        char = screen.getch()
+        char = command_screen.getch()
             #if 'ESC' is pressed
         if char == 27:
-            screen.addstr ('Exiting......')
+            command_screen.addstr ('Exiting......')
             break
 
         elif char == curses.KEY_UP:
@@ -616,6 +634,12 @@ try:
         elif char == 118:    # if 'v' is pressed paste copy buffer
             paste()       # paste copied text
 
+        elif char == 105:
+            stat_log (1, 'Write the TEXT to insert!.....')
+            input = command_screen.getstr()
+            input = input.decode('UTF-8')
+            insert (input)
+
         # if special command input char '/' is pressed
         elif char == 47:
             work()
@@ -639,7 +663,7 @@ try:
             break
 finally:
     #When 'ESC' is pressed and program ends
-    curses.nocbreak(); screen.keypad(0); curses.echo()
+    curses.nocbreak(); command_screen.keypad(0); curses.echo()
     curses.endwin()
 
 
