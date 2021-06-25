@@ -402,8 +402,6 @@ def chat (*params):
     paragraph_cursor = 0
     text_cursor = 0
 
-    openai.api_key = os.getenv ("API_KEY")    # get api key from environmental variable
-
     promptt = 'The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n\nHuman: Hello, who are you?\nAI: I am an AI created by OpenAI. How can I help you today?'
 
     chat_buffer = [[line + '\n'] for line in promptt.split('\n')]
@@ -488,13 +486,14 @@ def work():
 ### Variables and data ###
 
 
-#dictionary of text /commands associated with
-#according function names
+#dictionary of text /commands associated with according function names
 actions = {'data': data, 'print': printz, 'ed': change_text, 'edit': change_text, 'ch': change_text,
            'change': change_text, 'open': read_file, 'sel': select, 'select': select,
            'del': delete, 'delete': delete, 'in': insert, 'ins': insert, 'insert': insert, 'paste': paste,
            'chat': chat, 'save': save_buffer, 'exit': exit}
 
+
+openai.api_key = os.getenv ("API_KEY")    # get api key from environmental variable
 
 action_buffer = []   #action_buffer stores all command history
 text_buffer = []     #current text is stored in text_buffer
