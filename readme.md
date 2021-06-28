@@ -15,7 +15,7 @@ So You are welcome to help by requesting new features, pointing out bugs or cont
 
 ## Screenshots
 
-![](/screenshots/1111.png)
+![](/screenshots/skleontr-0.0.2.png)
 
 ## Usage
 
