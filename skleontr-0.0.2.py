@@ -31,9 +31,58 @@ def cmd_cleanup():     #clear last executed command from screen
     command_screen.border()
 
 
+def opt_cleanup():     #clear last executed command from screen
+    opt_screen.border()
+    opt_screen.refresh()
+    command_screen.move (1, 1)
+
+
 def stat_log1 (status):   #update command line status - results and errors
     command_screen.move (2, 1)
     command_screen.addstr (status)
+
+
+def stat_log2 (*params):
+    global engine
+    global response_length
+    global temperature
+    global top_p
+    global freq_pen
+    global pres_pen
+    global best_of
+    global stop_seq
+    global start_text
+    global restart_text
+    global sens_comp
+    global uns_comp
+
+    opt_screen.move (1, 1)    #clear the options screen
+    opt_screen.clrtobot()
+
+    opt_screen.move (1, 1)
+    opt_screen.addstr ('Engine: ' + str(engine))
+    opt_screen.move (2, 1)
+    opt_screen.addstr ('Response Length: ' + str(response_length))
+    opt_screen.move (3, 1)
+    opt_screen.addstr ('Temperature: ' + str(temperature))
+    opt_screen.move (4, 1)
+    opt_screen.addstr ('Top P: ' + str(top_p))
+    opt_screen.move (5, 1)
+    opt_screen.addstr ('Frequency penalty: ' + str(freq_pen))
+    opt_screen.move (6, 1)
+    opt_screen.addstr ('Presence penalty: ' + str(pres_pen))
+    opt_screen.move (7, 1)
+    opt_screen.addstr ('Best of: ' + str(best_of))
+    opt_screen.move (8, 1)
+    opt_screen.addstr ('Stop sequence: ' + str(stop_seq))
+    opt_screen.move (9, 1)
+    opt_screen.addstr ('Start text: ' + str(start_text))
+    opt_screen.move (10, 1)
+    opt_screen.addstr ('Restart text: ' + str(restart_text))
+    opt_screen.move (11, 1)
+    opt_screen.addstr ('Sensitive completions: ' + str(sens_comp))
+    opt_screen.move (12, 1)
+    opt_screen.addstr ('Unsafe completions: ' + str(uns_comp))
 
 
 def stat_log (*params):    # UPDATE ALL WINDOWS after applying changes
@@ -42,12 +91,16 @@ def stat_log (*params):    # UPDATE ALL WINDOWS after applying changes
     text_screen.move (0, 0)    #  <------ !!correct this for pad-style (scrolling) window
     text_screen.clrtobot()
     draw_text (paragraph_cursor, text_cursor)
-    if window_number == 1:
+
+    if window_number == 1:         #output on command window
         stat_log1 (str(stat_text))
-    cmd_cleanup()
+        cmd_cleanup()
 
+    elif window_number == 2:       #output on options window
+        stat_log2()
+        opt_cleanup()
 
-def data (*params):
+def data (*params):     #test function
     #screen.refresh()
     stat_log1 ('3465464677')
 
@@ -136,6 +189,8 @@ def draw_text (para_cursor, cursor, sel_cursor = 1):
         para_count += 1
 
     text_screen.refresh()
+
+    command_screen.move (1, 1)   #move curses text cursor to command screen
 
     #text_screen.move (cur_y, cur_x)   #restore original curses cursor position
 
@@ -493,6 +548,20 @@ actions = {'data': data, 'print': printz, 'ed': change_text, 'edit': change_text
            'chat': chat, 'save': save_buffer, 'exit': exit}
 
 
+engine = 'davinci'
+response_length = 64
+temperature = 0.7
+top_p = 1
+freq_pen = 0
+pres_pen = 0
+best_of = 0
+stop_seq = '\"\"\"'
+start_text = 0
+restart_text = 0
+sens_comp = 0
+uns_comp = 0
+
+
 openai.api_key = os.getenv ("API_KEY")    # get api key from environmental variable
 
 action_buffer = []   #action_buffer stores all command history
@@ -518,31 +587,44 @@ height,width = stdscr.getmaxyx()
 stdscr.clear()
 
 
-command_screen = curses.newwin (height, width, height - 3, 0)   #init a text WINDOW
-text_screen = curses.newwin (height - 4, width, 0, 0)
+# Init each window.
+# Curses is max glitching the command screen size in Gnome virtual terminals!
 
-#window border   !!set only for command window (at the bottom of terminal)
-#text_screen.border()
+command_screen = curses.newwin (height - 31, width - 31, height - 4, 30)
+text_screen = curses.newwin (height - 4, width - 31, 0, 31)
+opt_screen = curses.newwin (height, 30, 0, 0)
+
+
 text_screen.refresh()
+
 command_screen.border()
 command_screen.refresh()
+
+opt_screen.border()
+opt_screen.refresh()
+
 #turn screen scrolling on
 command_screen.scrollok (True)
 text_screen.scrollok (True)
+opt_screen.scrollok (True)
+
 # Turn off Echo
 #curses.noecho()
 #Instant Response
 curses.cbreak()
+
 #Use Special Keys
 command_screen.keypad (True)  # <---- enable special keys for command window
 text_screen.keypad (True)
 
 
 draw_text (0, text_cursor)   #display the text buffer; paragraph = 0
-stat_log (1, 'Welcome to Skleontr!!  Type /help to see the list of commands........')
 read_file ('input_text.txt')   #!!debug
 command_screen.move (1, 1)   #move command window cursor
-
+stat_log (1, 'Welcome to Skleontr!!  Type /help to see the list of commands........')
+command_screen.refresh()
+stat_log (2, 'dummy text for now')  #implement parameter passing instead of dummy
+opt_screen.refresh()
 
 
 ### Main loop ###
@@ -615,7 +697,7 @@ try:
             text_screen.move (0, 0)    #  <------ !!correct this for pad-style (scrolling) window
             text_screen.clrtobot()
             draw_text (paragraph_cursor, text_cursor)
-            text_screen_refresh()
+            text_screen.refresh()
 
             stat_log (1, 'Copied text!')
             cmd_cleanup()
