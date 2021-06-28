@@ -24,7 +24,7 @@ So You are welcome to help by requesting new features, pointing out bugs or cont
 Skleontr imports OpenAI Api key from the environment variable "API_KEY". You have to set that up beforehand in Your environment:\
 export API_KEY="`<your api key>`"\
 \
-**Run the program using: python3 skleontr-0.0.1.py**\
+**Run the program using: python3 skleontr-0.0.2.py**\
 \
 Use arrow keys to navigate the cursor. Cursor has highlighted text background. Cursor selects either one word or collection of words. Each separate word or, if entered, a collection of words is considered one entity.\
 UP/DOWN buttons navigate through the paragraphs and LEFT/RIGHT buttons - through the words in text.\
