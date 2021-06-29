@@ -619,7 +619,7 @@ text_screen.keypad (True)
 
 
 draw_text (0, text_cursor)   #display the text buffer; paragraph = 0
-read_file ('input_text.txt')   #!!debug
+read_file ('input_text.txt')    #!!debug
 command_screen.move (1, 1)   #move command window cursor
 stat_log (1, 'Welcome to Skleontr!!  Type /help to see the list of commands........')
 command_screen.refresh()
