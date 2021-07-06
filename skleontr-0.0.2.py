@@ -206,7 +206,7 @@ def select (*params):
     global text_buffer
     global copy_buffer
 
-    stat_log1 ('Selection mode: [esc]exit, [c]copy, [del]delete, [space]menu.')    #display status
+    stat_log1 ('Selection mode: [esc]exit, [c]copy, [d]delete, [space]select.')    #display status
     cmd_cleanup()
 
     while True:
